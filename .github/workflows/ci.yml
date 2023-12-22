@@ -1,0 +1,29 @@
+name: CI
+on:
+  workflow_dispatch:
+    inputs:
+      runs-on:
+        description: 'machine type'
+        required: true
+        default: 'ubuntu-latest'
+        type: choice
+        options:
+          - ubuntu-latest
+          - ubuntu-22.04
+          - ubuntu-20.04
+          - windows-latest
+          - windows-2022
+          - windows-2019
+          - macos-13
+          - macos-latest
+          - macos-12
+          - macos-11
+jobs:
+  build:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
