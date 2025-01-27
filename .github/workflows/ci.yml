@@ -43,9 +43,11 @@ jobs:
     - name: Tailscale
       uses: tailscale/github-action@v3
       with:
-        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-        tags: tag:ci
+        authkey: ${{ secrets.TS_AUTHKEY }}
+        args: ${{ secrets.TS_ARGS }}
+        #oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        #oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+        #tags: tag:ci
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       with:
