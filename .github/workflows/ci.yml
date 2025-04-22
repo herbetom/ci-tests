@@ -53,6 +53,9 @@ jobs:
     - name: "start attic watch-store as service"
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
       run: systemd-run --user -u attic /home/runner/.nix-profile/bin/attic watch-store github-herbetom-ci-tests
+    - name: "attic use"
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: attic use github-herbetom-ci-tests
     - name: Tailscale
       uses: tailscale/github-action@v3
       with:
@@ -66,6 +69,10 @@ jobs:
     - run: curl -s "https://kanidm.github.io/kanidm_ppa/kanidm_ppa.asc" | sudo tee /etc/apt/trusted.gpg.d/kanidm_ppa.asc >/dev/null
     - run: curl -s "https://kanidm.github.io/kanidm_ppa/kanidm_ppa.list" | grep $( ( . /etc/os-release && echo $VERSION_CODENAME) ) | grep stable | sudo tee /etc/apt/sources.list.d/kanidm_ppa.list
     - run: sudo apt update
+
+    - run: git clone https://github.com/nix-freifunk/nixos-config.git
+    - run: cd nixos-config && nix-shell --run "echo \"success\""
+    - run: cd nixos-config && nix-shell --run "colmena build -v"
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       with:
