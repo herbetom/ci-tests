@@ -49,10 +49,10 @@ jobs:
       run: nix-env -iA nixpkgs.attic-client
     - name: "attic login"
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
-      run: attic login default $ATTIC_ENDPOINT ${{ secrets.ATTIC_TOKEN }}
+      run: attic login default ${{ vars.ATTIC_ENDPOINT }} ${{ secrets.ATTIC_TOKEN }}
     - name: "start attic watch-store as service"
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
-      run: sudo systemd-run -u attic /home/runner/.nix-profile/bin/attic watch-store github-herbetom-ci-tests
+      run: systemd-run --user -u attic /home/runner/.nix-profile/bin/attic watch-store github-herbetom-ci-tests
     - name: Tailscale
       uses: tailscale/github-action@v3
       with:
