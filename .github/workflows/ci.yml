@@ -44,6 +44,12 @@ jobs:
     - name: nix-channel: update
       run: nix-channel --update
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+    - name: nix-env: install attic-client
+      run: nix-env -iA nixpkgs.attic-client
+    - name: attic login
+      run: attic login default $ATTIC_ENDPOINT ${{ secrets.ATTIC_TOKEN }}
+    - name: start attic watch-store as service
+      run: sudo systemd-run -u attic /home/runner/.nix-profile/bin/attic watch-store github-herbetom-ci-tests
     - name: Tailscale
       uses: tailscale/github-action@v3
       with:
