@@ -39,16 +39,19 @@ jobs:
     - uses: cachix/install-nix-action@v31
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
     - name: nix-channel: add ${{inputs.nixpkgs}}
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
       run: nix-channel --add https://channels.nixos.org/${{inputs.nixpkgs}} nixpkgs
-      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
     - name: nix-channel: update
-      run: nix-channel --update
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: nix-channel --update
     - name: nix-env: install attic-client
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
       run: nix-env -iA nixpkgs.attic-client
     - name: attic login
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
       run: attic login default $ATTIC_ENDPOINT ${{ secrets.ATTIC_TOKEN }}
     - name: start attic watch-store as service
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
       run: sudo systemd-run -u attic /home/runner/.nix-profile/bin/attic watch-store github-herbetom-ci-tests
     - name: Tailscale
       uses: tailscale/github-action@v3
