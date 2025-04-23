@@ -70,9 +70,11 @@ jobs:
     - run: curl -s "https://kanidm.github.io/kanidm_ppa/kanidm_ppa.list" | grep $( ( . /etc/os-release && echo $VERSION_CODENAME) ) | grep stable | sudo tee /etc/apt/sources.list.d/kanidm_ppa.list
     - run: sudo apt update
 
-    - run: git clone https://github.com/nix-freifunk/nixos-config.git
-    - run: cd nixos-config && nix-shell --run "echo \"success\""
-    - run: cd nixos-config && nix-shell --run "colmena build -v"
+
+
+#    - run: git clone https://github.com/nix-freifunk/nixos-config.git
+#    - run: cd nixos-config && nix-shell --run "echo \"success\""
+#    - run: cd nixos-config && nix-shell --run "colmena build -v"
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       with:
