@@ -65,12 +65,16 @@ jobs:
         #oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
         tags: tag:ci
     - run: sudo tailscale set --exit-node ionos-usa
+    - run: echo "SetEnv PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" > sudo tee -a /etc/ssh/sshd_config.d/60-env.conf
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+    - run: sudo systemctl restart ssh
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+    - run: mkdir -p ~/.ssh && curl https://github.com/herbetom.keys >> .ssh/authorized_keys
     - run: sudo mkdir -p /etc/apt/trusted.gpg.d/
     - run: curl -s "https://kanidm.github.io/kanidm_ppa/kanidm_ppa.asc" | sudo tee /etc/apt/trusted.gpg.d/kanidm_ppa.asc >/dev/null
     - run: curl -s "https://kanidm.github.io/kanidm_ppa/kanidm_ppa.list" | grep $( ( . /etc/os-release && echo $VERSION_CODENAME) ) | grep stable | sudo tee /etc/apt/sources.list.d/kanidm_ppa.list
-    - run: sudo apt update
-
-
+    - run: sudo apt-get update
+    #- run: sudo apt-get install kanidm-unixd -y
 
 #    - run: git clone https://github.com/nix-freifunk/nixos-config.git
 #    - run: cd nixos-config && nix-shell --run "echo \"success\""
