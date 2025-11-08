@@ -38,6 +38,7 @@ jobs:
   build:
     runs-on: ${{ inputs.runs-on }}
     steps:
+    - run: whoami
     - uses: actions/checkout@v5
     - uses: cachix/install-nix-action@v31
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
