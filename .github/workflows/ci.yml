@@ -45,6 +45,9 @@ jobs:
     - name: "nix-channel: add"
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
       run: nix-channel --add https://channels.nixos.org/${{inputs.nixpkgs}} nixpkgs
+    - name: "nix-channel --list"
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: nix-channel --list
     - name: "nix-channel - update"
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
       run: nix-channel --update
