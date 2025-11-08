@@ -11,14 +11,17 @@ on:
           - ubuntu-latest
           - ubuntu-24.04
           - ubuntu-22.04
-          - ubuntu-20.04
           - ubuntu-24.04-arm
           - ubuntu-22.04-arm
+          - ubuntu-slim
           - windows-latest
           - windows-2025
           - windows-2022
           - windows-2019
+          - windows-11-arm
           - macos-latest
+          - macos-26
+          - macos-15-intel
           - macos-15
           - macos-14
           - macos-13
@@ -28,19 +31,40 @@ on:
         type: boolean
       nixpkgs:
         description: 'nixpkgs channel'
-        default: 'nixos-unstable'
+        default: 'nixpkgs-unstable'
         type: string
 
 jobs:
   build:
     runs-on: ${{ inputs.runs-on }}
     steps:
-    - uses: actions/checkout@v4
+    - run: whoami
+    - uses: actions/checkout@v5
     - uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:${{inputs.nixpkgs}}
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    - name: "nix-channel: add"
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: nix-channel --add https://channels.nixos.org/${{inputs.nixpkgs}} nixpkgs
+    - name: "nix-channel - update"
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: nix-channel --update
+    - name: "nix-env: install attic-client"
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: nix-env -iA nixpkgs.attic-client
+    - name: "attic login"
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: attic login default ${{ vars.ATTIC_ENDPOINT }} ${{ secrets.ATTIC_TOKEN }}
+    - name: "start attic watch-store as service"
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: systemd-run --user -u attic /home/runner/.nix-profile/bin/attic watch-store github-herbetom-ci-tests
+    - name: "attic use"
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      run: attic use github-herbetom-ci-tests
+    - name: Setup upterm session
+      uses: owenthereal/action-upterm@v1
       with:
         limit-access-to-actor: true
+#    - name: Setup tmate session
+#      uses: mxschmitt/action-tmate@v3
+#      with:
+#        limit-access-to-actor: true
