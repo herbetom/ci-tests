@@ -58,7 +58,7 @@ jobs:
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
       run: attic login default ${{ vars.ATTIC_ENDPOINT }} ${{ secrets.ATTIC_TOKEN }}
     - name: "start attic watch-store as service"
-      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix && runner.os == 'Linux' }}
       run: systemd-run --user -u attic /home/runner/.nix-profile/bin/attic watch-store github-herbetom-ci-tests
     - name: "attic use"
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.install-nix }}
